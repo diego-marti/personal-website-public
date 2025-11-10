@@ -1,0 +1,16 @@
+{
+  "name": "tremendous-transit",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.3.9",
+    "astro": "^5.14.8",
+    "rehype-external-links": "^3.0.0"
+  }
+}

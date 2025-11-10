@@ -1,0 +1,36 @@
+---
+import "../styles/global.css";
+import NavBar from "../components/NavBar.astro";
+import Footer from "../components/Footer.astro";
+import { siteConfig } from "../config/site";
+
+interface Props {
+    title: string;
+    description?: string;
+    showNavBar?: boolean;
+}
+
+const { 
+    title, 
+    description = siteConfig.metadata.description,
+    showNavBar = true 
+} = Astro.props;
+---
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <link rel="icon" type="image/jpeg" href={siteConfig.profileImage} />
+        <meta name="viewport" content="width=device-width" />
+        <meta name="description" content={description} />
+        <meta name="generator" content={Astro.generator} />
+        <title>{title}</title>
+    </head>
+    <body>
+        <main>
+            {showNavBar && <NavBar />}
+            <slot />
+        </main>
+        <Footer />
+    </body>
+</html>

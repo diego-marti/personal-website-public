@@ -1,0 +1,46 @@
+---
+import { getCollection } from 'astro:content';
+
+const [publications, blog, projects] = await Promise.all([
+    getCollection('publications'),
+    getCollection('blog'),
+    getCollection('projects'),
+]);
+
+const hasPublications = publications.length > 0;
+const hasBlog = blog.length > 0;
+const hasProjects = projects.length > 0;
+---
+
+<nav class="navbar">
+    {hasPublications && (<a href="/#publications">Publications</a>)}
+    {hasBlog && (<a href="/#blog">Blog</a>)}
+    {hasProjects && (<a href="/#projects">Projects</a>)}
+</nav>
+
+<style>
+    .navbar {
+        display: flex;
+        justify-content: flex-end;
+        gap: 2rem;
+        padding: 2rem 0;
+    }
+
+    .navbar a {
+        text-decoration: none;
+        color: #666;
+        font-weight: 400;
+        transition: color 0.2s ease;
+    }
+
+    .navbar a:hover {
+        color: #333;
+    }
+
+    @media (max-width: 768px) {
+        .navbar {
+            justify-content: center;
+            gap: 1.5rem;
+        }
+    }
+</style>
