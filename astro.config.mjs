@@ -5,6 +5,8 @@ import mdx from '@astrojs/mdx';
 
 // https://astro.build/config
 export default defineConfig({
+    site: 'https://diego-marti.github.io',
+    base: '/personal-website-public',
     markdown: {
         rehypePlugins: [
             [rehypeExternalLinks, { 
