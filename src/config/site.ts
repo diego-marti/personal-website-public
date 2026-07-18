@@ -7,7 +7,7 @@ export const siteConfig = {
 	intro: {
 		text: [
 			"Hi! I'm Diego.",
-			"I'm an AI researcher. My goal is to create intelligent systems that can understand their environment and predict the outcomes of their actions to make informed decisions.",
+			"I'm an AI researcher at <stealth>. My goal is to create intelligent systems that can understand their environment and predict the outcomes of their actions to make informed decisions.",
 			"The future is exciting!",
 		],
 	},

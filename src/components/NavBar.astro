@@ -1,21 +1,24 @@
 ---
 import { getCollection } from 'astro:content';
 
-const [publications, blog, projects] = await Promise.all([
+const [publications, blog, projects, bio] = await Promise.all([
     getCollection('publications'),
     getCollection('blog'),
     getCollection('projects'),
+    getCollection('bio'),
 ]);
 
 const hasPublications = publications.length > 0;
 const hasBlog = blog.length > 0;
 const hasProjects = projects.length > 0;
+const hasBio = bio.length > 0;
 ---
 
 <nav class="navbar">
     {hasPublications && (<a href="/#publications">Publications</a>)}
     {hasBlog && (<a href="/#blog">Blog</a>)}
     {hasProjects && (<a href="/#projects">Projects</a>)}
+    {hasBio && (<a href="/#bio">Bio</a>)}
 </nav>
 
 <style>

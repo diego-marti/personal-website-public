@@ -7,6 +7,7 @@ import { siteConfig } from "../config/site";
 const publications = await getCollection("publications");
 const blogPosts = await getCollection("blog");
 const projects = await getCollection("projects");
+const bioEntries = await getCollection("bio");
 
 // Helper function to sort by year and month (newest first)
 const sortByDate = (a: any, b: any) => {
@@ -26,6 +27,10 @@ const sortByDate = (a: any, b: any) => {
 const sortedPublications = publications.sort(sortByDate);
 const sortedBlogPosts = blogPosts.sort(sortByDate);
 const sortedProjects = projects.sort(sortByDate);
+
+// The bio is a single entry; render its markdown body if it exists
+const BioContent =
+    bioEntries.length > 0 ? (await bioEntries[0].render()).Content : null;
 ---
 
 <Layout title={siteConfig.metadata.title}>
@@ -119,7 +124,7 @@ const sortedProjects = projects.sort(sortByDate);
 					{
 						siteConfig.social.email && (
 							<a
-								href={siteConfig.social.email}
+								href={`mailto:${siteConfig.social.email}`}
 								target="_blank"
 								rel="noopener noreferrer"
 								aria-label="Email"
@@ -301,6 +306,17 @@ const sortedProjects = projects.sort(sortByDate);
 							</article>
 						))}
 					</div>
+				</div>
+			</section>
+		) : null
+	}
+
+	{
+		BioContent ? (
+			<section id="bio" class="section">
+				<h2>Bio</h2>
+				<div class="content">
+					<BioContent />
 				</div>
 			</section>
 		) : null

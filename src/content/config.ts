@@ -42,8 +42,14 @@ const blog = defineCollection({
   }),
 });
 
+const bio = defineCollection({
+  type: 'content',
+  schema: z.object({}),
+});
+
 export const collections = {
   publications,
   projects,
   blog,
+  bio,
 };
