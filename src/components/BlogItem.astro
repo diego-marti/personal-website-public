@@ -1,0 +1,52 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+    post: CollectionEntry<"blog">;
+}
+
+const { post } = Astro.props;
+---
+
+<article class="blog-item">
+    <div class="meta date">
+        {new Date(post.data.pubDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+    </div>
+    <h3 class="blog-title">{post.data.title}</h3>
+    <p class="blog-excerpt">{post.data.description}</p>
+    <div class="entry-links">
+        <a href={`/blog/${post.slug}`} class="link-muted">Read more</a>
+    </div>
+</article>
+
+<style>
+    /* Blog entries stack rather than sitting beside a thumbnail, so they use
+       their own layout instead of the shared .entry-item row */
+    .blog-item {
+        border-bottom: 1px solid var(--color-border);
+        padding-bottom: 1.5rem;
+    }
+
+    .blog-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .date {
+        margin-bottom: 0.5rem;
+    }
+
+    .blog-title {
+        font-weight: bold;
+        font-size: 1.1rem;
+        margin: 0 0 0.5rem 0;
+        color: #333;
+    }
+
+    .blog-excerpt {
+        font-size: 0.95rem;
+        color: var(--color-text-light);
+        margin-bottom: 0.75rem;
+        line-height: 1.5;
+    }
+</style>

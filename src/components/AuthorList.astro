@@ -1,0 +1,32 @@
+---
+import { siteConfig } from "../config/site";
+
+interface Props {
+    authors?: readonly string[];
+}
+
+// Entries without an explicit author list are solo-authored
+const { authors = [siteConfig.name.full] } = Astro.props;
+
+// Content spells the name inconsistently, compare without accents or case
+const normalize = (value: string) =>
+    value
+        .normalize("NFD")
+        .replace(/\p{Diacritic}/gu, "")
+        .toLowerCase()
+        .trim();
+
+const ownNames = new Set(
+    [siteConfig.name.full, siteConfig.name.short].map(normalize),
+);
+
+const isSiteOwner = (author: string) => ownNames.has(normalize(author));
+---
+
+{
+    authors.map((author, index) => (
+        <span class={isSiteOwner(author) ? "author-bold" : "author"}>
+            {author}{index < authors.length - 1 ? ", " : ""}
+        </span>
+    ))
+}

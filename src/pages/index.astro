@@ -2,6 +2,10 @@
 import Layout from "../layouts/Layout.astro";
 import { getCollection } from "astro:content";
 import { siteConfig } from "../config/site";
+import { sortByDate } from "../utils/sortByDate";
+import PublicationItem from "../components/PublicationItem.astro";
+import BlogItem from "../components/BlogItem.astro";
+import ProjectItem from "../components/ProjectItem.astro";
 
 // Get all content from collections
 const publications = await getCollection("publications");
@@ -9,24 +13,18 @@ const blogPosts = await getCollection("blog");
 const projects = await getCollection("projects");
 const bioEntries = await getCollection("bio");
 
-// Helper function to sort by year and month (newest first)
-const sortByDate = (a: any, b: any) => {
-    // If we have pubDate (blog posts), use that
-    if (a.data.pubDate && b.data.pubDate) {
-        return b.data.pubDate.getTime() - a.data.pubDate.getTime();
-    }
-    
-    // Otherwise sort by year and month
-    if (a.data.year !== b.data.year) {
-        return b.data.year - a.data.year;
-    }
-    return (b.data.month || 0) - (a.data.month || 0);
-};
-
 // Sort all collections by date
 const sortedPublications = publications.sort(sortByDate);
 const sortedBlogPosts = blogPosts.sort(sortByDate);
 const sortedProjects = projects.sort(sortByDate);
+
+// Select newest few entries
+const { publications: pubConfig, blog: blogConfig, projects: projConfig } =
+    siteConfig.sections;
+
+const visiblePublications = sortedPublications.slice(0, pubConfig.maxItems);
+const visibleBlogPosts = sortedBlogPosts.slice(0, blogConfig.maxItems);
+const visibleProjects = sortedProjects.slice(0, projConfig.maxItems);
 
 // The bio is a single entry; render its markdown body if it exists
 const BioContent =
@@ -145,7 +143,7 @@ const BioContent =
 				</div>
 			</div>
 			<div class="profile-image">
-				<img src={siteConfig.profileImage} alt={siteConfig.name} />
+				<img src={siteConfig.profileImage} alt={siteConfig.name.full} />
 			</div>
 		</div>
 	</section>
@@ -156,78 +154,15 @@ const BioContent =
 				<h2>Publications</h2>
 				<div class="content">
 					<div class="publications-list">
-						{sortedPublications.map((publication) => (
-							<article class="publication-item">
-								<div class="publication-thumbnail">
-									{publication.data.thumbnail ? (
-										<img
-											src={publication.data.thumbnail}
-											alt={publication.data.title}
-										/>
-									) : (
-										<div class="placeholder-thumbnail" />
-									)}
-								</div>
-								<div class="publication-info">
-									<h3 class="publication-title">
-										{publication.data.title}
-									</h3>
-									<div class="publication-authors">
-										{publication.data.authors.map(
-											(author, index) => (
-												<span
-													class={
-														author.includes("Diego")
-															? "author-bold"
-															: "author"
-													}
-												>
-													{author}{index < publication.data.authors.length - 1 ? ", " : ""}
-												</span>
-											),
-										)}
-									</div>
-									<div class="publication-venue">
-										<span class="venue-name">
-											{publication.data.venue}
-										</span>{" "}
-										{publication.data.year}
-									</div>
-									<div class="publication-links">
-										{publication.data.website && (
-											<a
-												href={
-													publication.data.website
-												}
-												target="_blank"
-												rel="noopener noreferrer"
-											>
-												Website
-											</a>
-										)}
-										{publication.data.code && (
-											<a
-												href={publication.data.code}
-												target="_blank"
-												rel="noopener noreferrer"
-											>
-												Code
-											</a>
-										)}
-										{publication.data.arxiv && (
-											<a
-												href={publication.data.arxiv}
-												target="_blank"
-												rel="noopener noreferrer"
-											>
-												Arxiv
-											</a>
-										)}
-									</div>
-								</div>
-							</article>
+						{visiblePublications.map((publication) => (
+							<PublicationItem publication={publication} />
 						))}
 					</div>
+					{sortedPublications.length > pubConfig.maxItems && (
+						<a href="/publications" class="show-more link-muted">
+							Show more
+						</a>
+					)}
 				</div>
 			</section>
 		) : null
@@ -239,19 +174,15 @@ const BioContent =
 				<h2>Blog</h2>
 				<div class="content">
 					<div class="blog-list">
-						{sortedBlogPosts.map((post) => (
-							<article class="blog-item">
-								<div class="blog-date">
-									{new Date(post.data.pubDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-								</div>
-								<h3 class="blog-title">{post.data.title}</h3>
-								<p class="blog-excerpt">{post.data.description}</p>
-								<div class="blog-links">
-									<a href={`/blog/${post.slug}`}>Read more</a>
-								</div>
-							</article>
+						{visibleBlogPosts.map((post) => (
+							<BlogItem post={post} />
 						))}
 					</div>
+					{sortedBlogPosts.length > blogConfig.maxItems && (
+						<a href="/blog" class="show-more link-muted">
+							Show more
+						</a>
+					)}
 				</div>
 			</section>
 		) : null
@@ -266,46 +197,15 @@ const BioContent =
 						{siteConfig.sections.projects.description}
 					</p>
 					<div class="projects-list">
-						{sortedProjects.map((project) => (
-							<article class="project-item">
-								<div class="project-thumbnail">
-									{project.data.thumbnail ? (
-										<img
-											src={project.data.thumbnail}
-											alt={project.data.title}
-										/>
-									) : (
-										<div class="placeholder-thumbnail" />
-									)}
-								</div>
-								<div class="project-info">
-									<h3 class="project-title">
-										{project.data.title}
-									</h3>
-									<div class="project-tldr">
-										{project.data.tldr}
-									</div>
-									<div class="project-year">
-										{project.data.year}
-									</div>
-									<div class="project-links">
-										<a href={`/projects/${project.slug}`}>
-											Read more
-										</a>
-										{project.data.code && (
-											<a
-												href={project.data.code}
-												target="_blank"
-												rel="noopener noreferrer"
-											>
-												Code
-											</a>
-										)}
-									</div>
-								</div>
-							</article>
+						{visibleProjects.map((project) => (
+							<ProjectItem project={project} />
 						))}
 					</div>
+					{sortedProjects.length > projConfig.maxItems && (
+						<a href="/projects" class="show-more link-muted">
+							Show more
+						</a>
+					)}
 				</div>
 			</section>
 		) : null
@@ -324,29 +224,6 @@ const BioContent =
 </Layout>
 
 <style>
-	.navbar {
-		display: flex;
-		justify-content: flex-end;
-		gap: 2rem;
-		padding: 2rem 0;
-	}
-
-	.navbar a {
-		text-decoration: none;
-		color: #666;
-		font-weight: 400;
-		transition: color 0.2s ease;
-	}
-
-	.navbar a:hover {
-		color: #333;
-	}
-
-	main {
-		max-width: var(--max-width);
-		margin: 0 auto;
-	}
-
 	.intro-section {
 		display: flex;
 		align-items: center;
@@ -410,284 +287,10 @@ const BioContent =
 		object-fit: cover;
 	}
 
-	.section h2 {
-		font-size: 1.5rem;
-		margin-top: 1.5rem;
-		margin-bottom: 0.5rem;
-		border-bottom: 2px solid var(--color-text);
-		padding-bottom: 0.25rem;
-		display: inline-block;
-	}
-
-	.content {
-		font-size: 1rem;
-		color: #555;
-	}
-
-	.publications-list {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.publication-item {
-		display: flex;
-		gap: 1rem;
-		align-items: flex-start;
-		padding-bottom: 1rem;
-		margin-bottom: 1rem;
-		border-bottom: 1px solid var(--color-border);
-	}
-
-	.publication-item:first-child {
-		margin-top: 1rem;
-	}
-
-	.publication-item:last-child {
-		padding-bottom: 0;
-		margin-bottom: 0;
-		border-bottom: none;
-	}
-
-	.publication-thumbnail {
-		flex-shrink: 0;
-		width: 180px;
-		height: 108px;
-	}
-
-	.publication-thumbnail img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		border-radius: 4px;
-	}
-
-	.placeholder-thumbnail {
-		width: 100%;
-		height: 100%;
-		background: #f0f0f0;
-		border-radius: 4px;
-	}
-
-	.publication-info {
-		flex: 1;
-	}
-
-	.publication-title {
-		font-weight: bold;
-		font-size: 1rem;
-		margin: 0 0 0.5rem 0;
-		color: #333;
-		line-height: 1.3;
-	}
-
-	.publication-authors {
-		margin-bottom: 0.25rem;
-		font-size: 0.9rem;
-		color: var(--color-text-light);
-	}
-
-	.author-bold {
-		font-weight: bold;
-	}
-
-	.publication-venue {
-		margin-bottom: 0.5rem;
-		font-size: 0.9rem;
-		color: var(--color-text-light);
-	}
-
-	.venue-name {
-		font-weight: bold;
-	}
-
-	.publication-links {
-		display: flex;
-		gap: 1rem;
-	}
-
-	.publication-links a {
-		color: var(--color-text-light);
-		text-decoration: none;
-		font-size: 0.85rem;
-	}
-
-	.publication-links a:hover {
-		color: var(--color-text);
-		text-decoration: underline;
-	}
-
-	.projects-list {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.project-item {
-		display: flex;
-		gap: 1rem;
-		align-items: flex-start;
-		padding-bottom: 1rem;
-		margin-bottom: 1rem;
-		border-bottom: 1px solid var(--color-border);
-	}
-
-	.project-item:first-child {
-		margin-top: 1rem;
-	}
-
-	.project-item:last-child {
-		padding-bottom: 0;
-		margin-bottom: 0;
-		border-bottom: none;
-	}
-
-	.project-thumbnail {
-		flex-shrink: 0;
-		width: 180px;
-		height: 108px;
-	}
-
-	.project-thumbnail img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		border-radius: 4px;
-	}
-
-	.project-info {
-		flex: 1;
-	}
-
-	.project-title {
-		font-weight: bold;
-		font-size: 1rem;
-		margin: 0 0 0.5rem 0;
-		color: #333;
-		line-height: 1.3;
-	}
-
-	.project-description {
-		margin-bottom: 0.5rem;
-		font-size: 0.9rem;
-		color: var(--color-text-light);
-		line-height: 1.4;
-	}
-
-	.project-year {
-		margin-bottom: 0.5rem;
-		font-size: 0.9rem;
-		color: var(--color-text-light);
-		font-weight: bold;
-	}
-
-	.project-links {
-		display: flex;
-		gap: 1rem;
-	}
-
-	.project-links a {
-		color: var(--color-text-light);
-		text-decoration: none;
-		font-size: 0.85rem;
-	}
-
-	.project-links a:hover {
-		color: var(--color-text);
-		text-decoration: underline;
-	}
-
-	.blog-list {
-		display: flex;
-		flex-direction: column;
-		gap: 1.5rem;
-		margin-top: 1rem;
-	}
-
-	.blog-item {
-		border-bottom: 1px solid var(--color-border);
-		padding-bottom: 1.5rem;
-	}
-
-	.blog-item:last-child {
-		border-bottom: none;
-		padding-bottom: 0;
-	}
-
-	.blog-title {
-		font-weight: bold;
-		font-size: 1.1rem;
-		margin: 0 0 0.5rem 0;
-		color: #333;
-	}
-
-	.blog-date {
-		font-size: 0.9rem;
-		color: var(--color-text-light);
-		margin-bottom: 0.5rem;
-	}
-
-	.blog-excerpt {
-		font-size: 0.95rem;
-		color: var(--color-text-light);
-		margin-bottom: 0.75rem;
-		line-height: 1.5;
-	}
-
-	.blog-links a {
-		color: var(--color-text-light);
-		text-decoration: none;
-		font-size: 0.85rem;
-	}
-
-	.blog-links a:hover {
-		color: var(--color-text);
-		text-decoration: underline;
-	}
-
-	.footer {
-		margin-top: 4rem;
-		padding: 2rem 0;
-		border-top: 1px solid var(--color-border);
-		background: #fafafa;
-	}
-
-	.footer-content {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		max-width: var(--max-width);
-		margin: 0 auto;
-		padding: 0 1rem;
-	}
-
-	.footer-content p {
-		color: var(--color-text-light);
-		font-size: 0.9rem;
-		margin: 0;
-	}
-
 	@media (max-width: 768px) {
-		.navbar {
-			justify-content: center;
-			gap: 1.5rem;
-		}
-
 		.intro-content {
-			grid-template-columns: 1fr;
 			text-align: center;
 			gap: 2rem;
-		}
-
-		.intro-text h1 {
-			font-size: 1.5rem;
-		}
-
-		.profile-image img {
-			width: 200px;
-			height: 200px;
-		}
-
-		main {
-			padding: 0 1rem;
 		}
 	}
 </style>

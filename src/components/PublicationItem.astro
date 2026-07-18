@@ -1,0 +1,80 @@
+---
+import type { CollectionEntry } from "astro:content";
+import AuthorList from "./AuthorList.astro";
+
+interface Props {
+    publication: CollectionEntry<"publications">;
+}
+
+const { publication } = Astro.props;
+---
+
+<article class="entry-item">
+    <div class="entry-thumbnail">
+        {publication.data.thumbnail ? (
+            <img
+                src={publication.data.thumbnail}
+                alt={publication.data.title}
+            />
+        ) : (
+            <div class="placeholder-thumbnail" />
+        )}
+    </div>
+    <div class="entry-info">
+        <h3 class="entry-title">{publication.data.title}</h3>
+        <div class="meta authors">
+            <AuthorList authors={publication.data.authors} />
+        </div>
+        <div class="meta venue">
+            <span class="venue-name">{publication.data.venue}</span>{" "}
+            {publication.data.year}
+        </div>
+        <div class="entry-links">
+            {publication.data.website && (
+                <a
+                    href={publication.data.website}
+                    class="link-muted"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Website
+                </a>
+            )}
+            {publication.data.code && (
+                <a
+                    href={publication.data.code}
+                    class="link-muted"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Code
+                </a>
+            )}
+            {publication.data.arxiv && (
+                <a
+                    href={publication.data.arxiv}
+                    class="link-muted"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Arxiv
+                </a>
+            )}
+        </div>
+    </div>
+</article>
+
+<style>
+    /* Spacing only; appearance comes from the global .meta / .entry-* classes */
+    .authors {
+        margin-bottom: 0.25rem;
+    }
+
+    .venue {
+        margin-bottom: 0.5rem;
+    }
+
+    .venue-name {
+        font-weight: bold;
+    }
+</style>

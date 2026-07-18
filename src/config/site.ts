@@ -1,6 +1,11 @@
+const name = {
+	full: "Diego Martí Monsó",
+	short: "Diego Martí",
+} as const;
+
 export const siteConfig = {
 	// Personal information
-	name: "Diego Martí",
+	name,
 	profileImage: "/diego.jpg",
 	
 	// Bio/intro text
@@ -23,14 +28,21 @@ export const siteConfig = {
 	
 	// Site metadata
 	metadata: {
-		description: "Diego Martí's personal website",
-		title: "Diego Martí",
+		description: `${name.short}'s personal website`,
+		title: name.short,
 	},
 	
-	// Section descriptions
+	// Section descriptions and max entries to show on the homepage
 	sections: {
+		publications: {
+			maxItems: 5,
+		},
+		blog: {
+			maxItems: 5,
+		},
 		projects: {
 			description: "These are some projects I did that were not publication-worthy, but still interesting.",
+			maxItems: 5,
 		},
 	},
 } as const;

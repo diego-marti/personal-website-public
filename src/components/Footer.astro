@@ -1,9 +1,11 @@
 ---
+import { siteConfig } from "../config/site";
+
 const currentYear = new Date().getFullYear();
 ---
 
 <footer class="footer">
     <div class="footer-content">
-        <p>&copy; {currentYear} Diego Martí Monsó. All rights reserved.</p>
+        <p>&copy; {currentYear} {siteConfig.name.full}. All rights reserved.</p>
     </div>
 </footer>

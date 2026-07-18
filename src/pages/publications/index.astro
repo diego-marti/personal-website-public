@@ -1,0 +1,26 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+import { siteConfig } from "../../config/site";
+import { sortByDate } from "../../utils/sortByDate";
+import PublicationItem from "../../components/PublicationItem.astro";
+
+const publications = await getCollection("publications");
+const sortedPublications = publications.sort(sortByDate);
+---
+
+<Layout title={`Publications - ${siteConfig.name.short}`} showNavBar={false}>
+    <article class="article">
+        <div class="article-header">
+            <a href="/#publications" class="back-link link-muted">← Back</a>
+            <h1 class="page-title">Publications</h1>
+        </div>
+        <div class="content">
+            <div class="publications-list">
+                {sortedPublications.map((publication) => (
+                    <PublicationItem publication={publication} />
+                ))}
+            </div>
+        </div>
+    </article>
+</Layout>
