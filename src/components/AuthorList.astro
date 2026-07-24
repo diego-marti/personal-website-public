@@ -8,11 +8,13 @@ interface Props {
 // Entries without an explicit author list are solo-authored
 const { authors = [siteConfig.name.full] } = Astro.props;
 
-// Content spells the name inconsistently, compare without accents or case
+// Content spells the name inconsistently, compare without accents, case,
+// or footnote markers like the "*" used for equal contribution
 const normalize = (value: string) =>
     value
         .normalize("NFD")
         .replace(/\p{Diacritic}/gu, "")
+        .replace(/\*/g, "")
         .toLowerCase()
         .trim();
 
