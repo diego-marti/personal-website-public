@@ -7,5 +7,6 @@ arxiv: "https://arxiv.org/abs/2407.01392"
 thumbnail: "/publications/df.webp"
 website: "https://www.boyuan.space/diffusion-forcing/"
 code: "https://github.com/buoyancy99/diffusion-forcing"
+twitter: "https://x.com/BoyuanChen0/status/1808538170067407264"
 featured: true
 ---

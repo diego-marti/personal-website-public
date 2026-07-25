@@ -12,6 +12,7 @@ const publications = defineCollection({
     website: z.string().optional(),
     code: z.string().optional(),
     arxiv: z.string().optional(),
+    twitter: z.string().optional(),
     featured: z.boolean().default(false),
   }),
 });

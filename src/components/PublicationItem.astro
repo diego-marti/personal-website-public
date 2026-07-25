@@ -60,6 +60,16 @@ const { publication } = Astro.props;
                     Arxiv
                 </a>
             )}
+            {publication.data.twitter && (
+                <a
+                    href={publication.data.twitter}
+                    class="link-muted"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Twitter
+                </a>
+            )}
         </div>
     </div>
 </article>
